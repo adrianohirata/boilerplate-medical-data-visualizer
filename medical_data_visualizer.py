@@ -20,19 +20,18 @@ df['gluc'] = df['gluc'].apply(lambda x: 0 if x == 1 else 1)
 # 4
 def draw_cat_plot():
     # 5
-    df_cat = None
-
+    df_cat = df.melt(id_vars=['cardio'], value_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
 
     # 6
-    df_cat = None
-    
+    df_cat = df_cat.sort_values(by='variable')
 
+    df_cat = df_cat.groupby(['cardio', 'variable', 'value'])['value'].size().reset_index(name='total')
+  
     # 7
-
-
+    sns.catplot(data=df_cat, col='cardio', x='variable', hue='value', kind='count', order=df_cat['variable'].unique())
 
     # 8
-    fig = None
+    fig = plt.gcf()
 
 
     # 9
@@ -43,22 +42,25 @@ def draw_cat_plot():
 # 10
 def draw_heat_map():
     # 11
-    df_heat = None
+    df_heat = df[(df['ap_lo'] <= df['ap_hi']) &
+        (df['height'] >= df['height'].quantile(0.025)) &
+        (df['height'] <= df['height'].quantile(0.975)) &
+        (df['weight'] >= df['weight'].quantile(0.025)) &
+        (df['weight'] <= df['weight'].quantile(0.975))
+        ]
 
     # 12
-    corr = None
+    corr = df_heat.corr()
 
     # 13
-    mask = None
-
-
+    mask = np.triu(np.ones_like(corr, dtype=bool))
 
     # 14
-    fig, ax = None
+    fig, ax = plt.subplots(figsize=(14, 12))
 
     # 15
-
-
+    sns.color_palette("icefire", as_cmap=True)
+    sns.heatmap(corr, mask=mask, ax=ax, annot=True, fmt='.1f', center=0)
 
     # 16
     fig.savefig('heatmap.png')
