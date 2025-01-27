@@ -12,6 +12,9 @@ df['BMI'] = df["weight"] / ((df["height"]/100) ** 2)
 #df['overweight'] = np.where(df['BMI'] > 25, 1, 0)
 df['overweight'] = df['BMI'].apply(lambda x: 1 if x > 25 else 0)
 
+# drop aux column BMI
+df.drop('BMI', axis=1, inplace=True)
+
 # 3
 df['cholesterol'] = df['cholesterol'].apply(lambda x: 0 if x == 1 else 1)
 
@@ -28,10 +31,10 @@ def draw_cat_plot():
     df_cat = df_cat.groupby(['cardio', 'variable', 'value'])['value'].size().reset_index(name='total')
   
     # 7
-    sns.catplot(data=df_cat, col='cardio', x='variable', hue='value', kind='count', order=df_cat['variable'].unique())
+    bar_plot = sns.catplot(data=df_cat, col='cardio', x='variable', y='total', hue='value', kind='bar')
 
     # 8
-    fig = plt.gcf()
+    fig = bar_plot.fig
 
 
     # 9
